@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Odin tutorial: Tic-tac-toe</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <h1>Tic-tac-toe! (For The Odin Project)</h1>
+    <div id="wrapper">
+        <div id="header">
+            <button type="button" name="new-button" id="new-button" autocomplete="off">New game</button>
+            <button type="button" name="start-button" id="start-button" autocomplete="off">Start game!</button>
+            <button type="button" name="nextround-button" id="nextround-button" autocomplete="off">Next Round</button>
+        </div>
+        <div class="player-container" id="player1-container">
+            <p id="player1-name" class="name">X</p>
+            <div class="select-container">
+                <select name="player1-selection" id="player1-selection">
+                    <option value="human">Human</option>
+                    <option value="comp-easy">AI (easy)</option>
+                    <option value="comp-hard">AI (impossible)</option>
+                </select>
+                <span class="focus"></span>
+            </div>
+            <p id="player1-score" class="score">0</p>
+        </div>
+        <div id="gameboard-container">
+            <div class="cell" id="x1y1"></div>
+            <div class="cell" id="x2y1"></div>
+            <div class="cell" id="x3y1"></div>
+            <div class="cell" id="x1y2"></div>
+            <div class="cell" id="x2y2"></div>
+            <div class="cell" id="x3y2"></div>
+            <div class="cell" id="x1y3"></div>
+            <div class="cell" id="x2y3"></div>
+            <div class="cell" id="x3y3"></div>
+        </div>
+        <div class="player-container" id="player2-container">
+            <p id="player1-name" class="name">O</p>
+            <div class="select-container">
+                <select name="player2-selection" id="player2-selection">
+                    <option value="human">Human</option>
+                    <option value="comp-easy">AI (easy)</option>
+                    <option value="comp-hard">AI (impossible)</option>
+                </select>
+                <span class="focus"></span>
+            </div>
+            <p id="player2-score" class="score">0</p>
+        </div>
+        <div id="footer">
+            <p id="winner"></p>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,205 @@
+:root {
+    --cellSize: 60px;
+    --bg-color: #333;
+    --border-color: #6bff6b;
+    --select-arrow: var(--border-color);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+    background-color: var(--bg-color);
+    color: var(--border-color)
+}
+
+body {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 10px;
+}
+
+h1 {
+    font-size: 1.2rem;
+    text-align: center;
+    color: black;
+}
+
+#wrapper {
+    display: grid;
+    grid-template-columns: 100px max-content 100px;
+    grid-template-rows: 3em auto 3em;
+    grid-template-areas: 
+        "header header header"
+        "player1 board player2"
+        "footer footer footer";
+    width: max-content;
+    margin-left: auto;
+    margin-right: auto;
+    gap: 20px;
+    }
+
+#header {
+    grid-area: header;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+#footer {
+    grid-area: footer;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.player-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.player-container .active-player {
+    border: 1px dotted var(--border-color);
+}
+
+select {
+    appearance: none;
+    background-color: transparent;
+    border: none;
+    padding: 0 1em 0 0;
+    margin: 0;
+    width: 100%;
+    font-family: inherit;
+    font-size: inherit;
+    color: var(--border-color);
+    cursor: inherit;
+    line-height: inherit;
+    outline: none;
+  }
+
+ select::-ms-expand {
+    display: none;
+ }
+
+.select-container {
+    margin-bottom: auto;
+    width: 100;
+    border: 1px solid black;
+    padding: 0.25em 0.5em;
+    cursor: pointer;
+    line-height: 1.1;
+    background-color: var(--bg-color);
+    display: grid;
+    grid-template-areas: "select";
+    position: relative;
+}
+
+select,
+.select-container:after {
+    grid-area: select;
+}
+
+.select-container {
+    align-items: center;
+}
+
+.select-container:after {
+    justify-self: right;
+}
+
+.select-container::after{
+    content: "";
+    width: 0.8em;
+    height: 0.5em;
+    background-color: black;
+    clip-path: polygon(100% 0%, 0 0%, 50% 100%);
+}
+
+select:focus + .focus {
+    position: absolute;
+    top: -1px;
+    left: -1px;
+    right: -1px;
+    bottom: -1px;
+    border: 1px solid var(--border-color);
+    border-radius: inherit;
+}
+
+.select-container--disabled {
+    cursor: not-allowed;
+    border-color: var(--bg-color);
+}
+
+.player-container p {
+    align-self: center;
+}
+
+#player1-container {
+    grid-area: player1;
+}
+
+#player2-container {
+    grid-area: player2;
+}
+
+#gameboard-container {
+    display: grid;
+    grid-template-columns: repeat(3, var(--cellSize));
+    grid-template-rows: repeat(3, var(--cellSize));
+    grid-area: board;
+    justify-content: center;
+}
+
+.cell {
+    display: flex;
+    font-size: calc(var(--cellSize) / 2);
+    justify-content: center;
+    align-items: center;
+}
+
+#x1y2, #x2y2, #x3y2 {
+    border-top: 1px dotted var(--border-color);
+    border-bottom: 1px dotted var(--border-color);
+}
+
+#x2y1, #x2y2, #x2y3 {
+    border-left: 1px dotted var(--border-color);
+    border-right: 1px dotted var(--border-color);
+}
+
+.free-cell:hover {
+    background-color: bisque;
+}
+
+.winning-cell {
+    background-color: deepskyblue;
+}
+
+button {
+    background-color: var(--bg-color);
+    border: 1px solid black;
+    color: var(--border-color);
+    width: 100px;
+    font-size: inherit;
+    height: 2em;
+    margin: 3px;
+}
+
+#start-button {
+    border: 1px dotted var(--border-color);
+}
+
+button:active {
+    border-color: var(--border-color);
+}
+
+button[disabled=true],
+#start-button[disabled=true] {
+    color: black;
+    border-color: black;
+    border-style: solid;
+}
+
