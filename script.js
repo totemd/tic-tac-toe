@@ -29,13 +29,20 @@ const CreatePlayer = (mark, container) => {
     const toggleActive = () => {
         active = !active;
         updateDisplay();
-        if (active) {
-            if (type === "comp-easy") {
-                console.log("Placeholder for random algorithm");
-            } else if (type === "comp-hard") {
-                console.log("Placeholder for min-max algorithm")
+    };
+
+    const makeMove = () => {
+        const board = gameBoard.getAllMarks();
+        if (type === "comp-easy") {
+            const randomMove = findRandomMove(board);
+            gameBoard.input(randomMove.col + 1, randomMove.row + 1);
+        } else if (type === "comp-hard") {
+            const bestMove = findBestMove(board);
+            if (bestMove.col > -1 && bestMove.row > -1) {
+                gameBoard.input(bestMove.col + 1, bestMove.row + 1);
             }
         }
+        updateDisplay();
     };
 
     const getMark = () => mark;
@@ -48,13 +55,143 @@ const CreatePlayer = (mark, container) => {
 
     updateDisplay();
 
-    return { win, reset, toggleActive, getMark, setType };
+    // MINIMAX ALGORITHM FUNCTIONS
+
+    // Results +10 if _this_ player is winning,
+    // -10 if the opponent is winning,
+    // 0 in case of draw.
+    const evaluate = (board) => {
+        // Checking rows
+        for (let row = 0; row < 3; row++) {
+            if (board[row][0] === board[row][1] && board[row][1] === board[row][2]) {
+                if (board[row][0] === mark) {
+                    return 10;
+                } else if (board[row][0] !== "_") {
+                    return -10;
+                }
+            }
+        }
+        // Checking columns
+        for (let col = 0; col < 3; col++) {
+            if (board[0][col] === board[1][col] && board[1][col] === board[2][col]) {
+                if (board[0][col] === mark) {
+                    return 10;
+                } else if (board[0][col] !== "_") {
+                    return -10;
+                }
+            }
+        }
+        // Checking diagonals
+        if (board[0][0] === board[1][1] && board[1][1] === board[2][2]) {
+            if (board[0][0] === mark) {
+                return 10;
+            } else if (board[0][0] !== "_") {
+                return -10;
+            }
+        }
+        if (board[0][2] === board[1][1] && board[1][1] === board[2][0]) {
+            if (board[0][2] === mark) {
+                return 10;
+            } else if (board[0][2] !== "_") {
+                return -10;
+            }
+        }
+        return 0;
+    }
+
+    const isMovesLeft = (board) => {
+        for (let row = 0; row < 3; row++) {
+            for (let col = 0; col < 3; col++) {
+                if (board[row][col] === "_") {
+                    return true;
+                }
+            }
+        }
+        return false;
+    };
+
+    // This function evaluates all the possible moves and returns the best value for that move
+    // Maximizing player is _this_ player
+    const minimax = (board, depth, isMaximizingPlayer) => {
+        // Evaluate the current board
+        let score = evaluate(board);
+        // If it is in final state, return its score
+        if (score === 10 || score === -10) {
+            return score;
+        }
+        if (isMovesLeft(board) === false) {
+            return 0;
+        }
+        // Otherwise, evaluate "further" boards :
+        if (isMaximizingPlayer) {
+            let bestVal = -Infinity;
+            for (let row = 0; row < 3; row++) {
+                for (let col = 0; col < 3; col++) {
+                    if (board[row][col] === "_") {
+                        board[row][col] = mark;
+                        let mmVal = minimax(board, depth + 1, !isMaximizingPlayer)
+                        bestVal = bestVal >= mmVal ? bestVal : mmVal;
+                        board[row][col] = "_";
+                    }
+                }
+            }
+            return bestVal - depth;
+        } else {
+            let bestVal = Infinity;
+            for (let row = 0; row < 3; row++) {
+                for (let col = 0; col < 3; col++) {
+                    if (board[row][col] === "_") {
+                        board[row][col] = (mark === "X") ? "O" : "X";   // Fix this
+                        let mmVal = minimax(board, depth + 1, !isMaximizingPlayer)
+                        bestVal = bestVal <= mmVal ? bestVal : mmVal;
+                        board[row][col] = "_";
+                    }
+                }
+            }
+            return bestVal + depth;
+        }
+    };
+
+    // This function evaluates all moves with minimax and returns the best move
+    const findBestMove = (board) => {
+        bestVal = -Infinity;
+        bestMove = { row: -1, col: -1 };
+        for (let row = 0; row < 3; row++) {
+            for (let col = 0; col < 3; col++) {
+                if (board[row][col] === "_") {
+                    board[row][col] = mark;
+                    moveVal = minimax(board, 0, false);
+                    board[row][col] = "_";
+                    if (moveVal > bestVal) {
+                        bestMove.row = row;
+                        bestMove.col = col;
+                        bestVal = moveVal;
+                    }
+                }
+            }
+        }
+        return bestMove;
+    };
+
+    const findRandomMove = (board) => {
+        let possibleMoves = []
+        for (let row = 0; row < 3; row++) {
+            for (let col = 0; col < 3; col++) {
+                if (board[row][col] === "_") {
+                    possibleMoves.push({row: row, col: col});
+                }
+            }
+        }
+        return possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
+    }
+
+    return { win, reset, toggleActive, getMark, setType, makeMove };
 };
 
 const Cell = (x, y, container) => {
     let mark = null;
 
-    function inputClick() {
+    function input() {
         mark = game.getActivePlayer().getMark();
         container.textContent = mark;
         deactivate();
@@ -63,12 +200,12 @@ const Cell = (x, y, container) => {
 
     const activate = () => {
         container.classList.add("free-cell");
-        container.addEventListener("click", inputClick);
+        container.addEventListener("click", input);
     };
 
     const deactivate = () => {
         container.classList.remove("free-cell");
-        container.removeEventListener("click", inputClick);
+        container.removeEventListener("click", input);
     };
 
     const clear = () => {
@@ -79,14 +216,14 @@ const Cell = (x, y, container) => {
 
     const getMark = () => mark;
 
-    return { activate, deactivate, clear, getMark };
+    return { activate, deactivate, clear, getMark, input };
 };
 
 const gameBoard = (() => {
     const board = [];
-    for (let j = 1; j <= 3; j++){
-        for (let i = 1; i <= 3; i++){
-            board.push(Cell(i, j, document.getElementById(`x${i}y${j}`)));  
+    for (let j = 1; j <= 3; j++) {
+        for (let i = 1; i <= 3; i++) {
+            board.push(Cell(i, j, document.getElementById(`x${i}y${j}`)));
         }
     }
 
@@ -112,6 +249,19 @@ const gameBoard = (() => {
 
     const getMarkAt = (x, y) => board[getIndex(x, y)].getMark();
 
+    const getAllMarks = () => {
+        let output = [];
+        for (let i = 0; i < 3; i++) {
+            output[i] = [];
+            for (let j = 0; j < 3; j++) {
+                let mark = getMarkAt(j + 1, i + 1);
+                mark = (mark === null) ? "_" : mark;
+                output[i][j] = mark;
+            }
+        }
+        return output;
+    };
+
     const getRow = (y) => [getMarkAt(1, y), getMarkAt(2, y), getMarkAt(3, y)];
 
     const getCol = (x) => [getMarkAt(x, 1), getMarkAt(x, 2), getMarkAt(x, 3)];
@@ -136,7 +286,11 @@ const gameBoard = (() => {
 
     };
 
-    return { getMarkAt, activateAll, deactivateAll, clearAll, checkWinner };
+    const input = (x, y) => {
+        board[getIndex(x, y)].input();
+    };
+
+    return { getMarkAt, getAllMarks, activateAll, deactivateAll, clearAll, checkWinner, input };
 })();
 
 const game = (() => {
@@ -166,6 +320,7 @@ const game = (() => {
         startButton.setAttribute("disabled", true);
         nextRoundButton.setAttribute("disabled", true);
         players.forEach(p => p.setType());
+        getActivePlayer().makeMove();
     };
 
     const newGame = () => {
@@ -187,12 +342,13 @@ const game = (() => {
         gameBoard.clearAll();
         gameBoard.activateAll();
         logFooter("");
+        getActivePlayer().makeMove();
     };
 
     const getActivePlayer = () => players[(startingPlayer + turn) % 2];
 
     const goToNextTurn = (x, y) => {
-        let winner = gameBoard.checkWinner(x, y)
+        let winner = gameBoard.checkWinner(x, y);
         if (winner) {
             gameBoard.deactivateAll();
             logFooter(`${winner} wins!`);
@@ -201,9 +357,12 @@ const game = (() => {
         } else if (turn === 8) {
             logFooter("Draw!");
             nextRoundButton.removeAttribute("disabled");
-        }
+        } 
         turn++;
         players.forEach(p => p.toggleActive());
+        if (winner === null && turn < 9) {
+            getActivePlayer().makeMove();
+        }
     };
 
     newGame();
