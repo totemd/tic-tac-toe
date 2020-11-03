@@ -5,7 +5,7 @@ const CreatePlayer = (mark, playerContainer) => {
     // Initialization
     let score = 0;
     let type = null;
-    playerContainer.style.border = "";
+    playerContainer.style.border = "1px solid var(--bg-color)";
     playerContainer.querySelector(".score").textContent = score;
 
     const getMark = () => mark;
@@ -404,8 +404,11 @@ const game = (() => {
         // Reset gameboard
         gameBoard.clearAll();
         gameBoard.activateAll();
-        // Reset menu
+        // Update menu
         footerMessage("");
+        newButton.activate();
+        startButton.deactivate();
+        nextRoundButton.deactivate();
         // Initiate first turn
         getActivePlayer().startTurn();
     }

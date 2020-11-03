@@ -1,5 +1,5 @@
 :root {
-    --cellSize: 60px;
+    --cellSize: 75px;
     --bg-color: #333;
     --border-color: #6bff6b;
     --select-arrow: var(--border-color);
@@ -12,7 +12,7 @@
 }
 
 html {
-    background-color: var(--bg-color);
+    background-color: #151515;
     color: var(--border-color)
 }
 
@@ -24,13 +24,15 @@ body {
 h1 {
     font-size: 1.2rem;
     text-align: center;
-    color: black;
+    color: var(--bg-color);
+    margin-top: 25px;
+    margin-bottom: 10px;
 }
 
 #wrapper {
     display: grid;
-    grid-template-columns: 100px max-content 100px;
-    grid-template-rows: 3em auto 3em;
+    grid-template-columns: 120px max-content 120px;
+    grid-template-rows: auto auto 24px;
     grid-template-areas: 
         "header header header"
         "player1 board player2"
@@ -39,6 +41,9 @@ h1 {
     margin-left: auto;
     margin-right: auto;
     gap: 20px;
+    padding: 5px 10px;
+    border: 2px solid black;
+    background-color: var(--bg-color);
     }
 
 #header {
