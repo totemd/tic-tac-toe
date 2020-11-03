@@ -11,21 +11,17 @@ const CreatePlayer = (mark, playerContainer) => {
     const getMark = () => mark;
 
     const openSelection = () => {
-        // Activate selection UI
         playerContainer.querySelector("select").removeAttribute("disabled");
         playerContainer.querySelector(".select-container").style.border = "1px dotted var(--border-color)";
     };
 
     const lockSelection = () => {
-        // Store selection value
         type = playerContainer.querySelector("select").value;
-        // Deactivate selection UI
         playerContainer.querySelector("select").setAttribute("disabled", "");
         playerContainer.querySelector(".select-container").style.border = "1px solid var(--bg-color)";
     };
 
     const startTurn = () => {
-        // Light up the border
         playerContainer.style.border = "1px dotted var(--border-color)";
         // If it is AI (easy) turn, make a random move
         // If it is AI (hard) turn, make the best move
@@ -41,8 +37,7 @@ const CreatePlayer = (mark, playerContainer) => {
     };
 
     const endTurn = () => {
-        // Turn off the border
-        playerContainer.style.border = "";
+        playerContainer.style.border = "1px solid var(--bg-color)";
     };
 
     const winRound = () => {
@@ -183,7 +178,7 @@ const Cell = (cellContainer) => {
 
     const handleClick = () => {
         input(game.getActivePlayer().getMark());
-    }
+    };
 
     return {
         isFree,
@@ -196,7 +191,6 @@ const Cell = (cellContainer) => {
 };
 
 const gameBoard = (() => {
-    // Initialize a 2D array with cell objects
     const board = [];
     for (let row = 0; row < 3; row++) {
         board[row] = [];
@@ -205,12 +199,10 @@ const gameBoard = (() => {
         }
     }
 
-    // Handle input from AI
     const input = (row, col, mark) => {
         board[row][col].input(mark);
     };
 
-    // Clear all cells
     const clearAll = () => {
         for (let row = 0; row < 3; row++) {
             for (let col = 0; col < 3; col++) {
@@ -219,7 +211,6 @@ const gameBoard = (() => {
         }
     };
 
-    // Activate all cells
     const activateAll = () => {
         for (let row = 0; row < 3; row++) {
             for (let col = 0; col < 3; col++) {
@@ -228,7 +219,6 @@ const gameBoard = (() => {
         }
     };
 
-    // Deactivate all cells
     const deactivateAll = () => {
         for (let row = 0; row < 3; row++) {
             for (let col = 0; col < 3; col++) {
@@ -249,9 +239,9 @@ const gameBoard = (() => {
         return output;
     };
 
-    // Check and return the mark of the winner, if any
+    // Check and return the mark of the winner
     // board is a facultative argument that takes 
-    // any 2d array of mark characters (userful for
+    // any 2d array of mark characters (useful for
     // minimax evaluations)
     const getWinner = (board) => {
         // If no argument is passed, use this gameBoard
@@ -289,9 +279,9 @@ const gameBoard = (() => {
         return 0;
     };
 
-    // Returns true if any cell is free
+    // Return true if any cell is free
     // board is a facultative argument that takes 
-    // any 2d array of mark characters (userful for
+    // any 2d array of mark characters (useful for
     // minimax evaluations)    
     const anyFreeCell = (board) => {
         // If no argument is passed, use the gameBoard
@@ -326,20 +316,15 @@ const game = (() => {
     let startingPlayer = 0;
 
     // Button factory function
-    // A button is defined by its ID in the DOM and
-    // the function it triggers
     const CreateButton = (id, handler) => {
-        // Initialize by adding an event listener
         const domElement = document.getElementById(id);
         domElement.addEventListener("click", handler);
         deactivate();
 
-        // Activate the button
         function activate() {
             domElement.removeAttribute("disabled");
         }
 
-        // Deactivate the button
         function deactivate() {
             domElement.setAttribute("disabled", true);
         }
@@ -347,12 +332,10 @@ const game = (() => {
         return { activate, deactivate }
     };
 
-    // Display a message under the gameboard
     const footerMessage = (message) => {
         document.getElementById("winner").textContent = message;
     };
 
-    // Get the player whose turn is on
     const getActivePlayer = () => players[(startingPlayer + turn) % 2];
 
     // Create the 3 menu buttons
@@ -381,7 +364,7 @@ const game = (() => {
         players.forEach(p => p.openSelection());
     }
 
-    // Start the gameplay
+    // Start gameplay
     function startGame() {
         // Activate gameboard
         gameBoard.activateAll();
@@ -413,27 +396,22 @@ const game = (() => {
         getActivePlayer().startTurn();
     }
 
-    // Handle end of turn and start of next turn
     const nextTurn = () => {
-        // End turn of active player
         getActivePlayer().endTurn();
         // Check if the round is over
         const winner = gameBoard.getWinner();
         const draw = gameBoard.anyFreeCell() === false;
         const isOver = winner || draw;
         if (isOver) {
-            // Lock game board
             gameBoard.deactivateAll();
-            // Display message
             if (winner) {
                 footerMessage(`${winner} wins this round!`);
                 getActivePlayer().winRound();
             } else if (draw) {
                 footerMessage("Draw!");
             }
-            // Activate next round button
             nextRoundButton.activate();
-        } else {    // If round is not over, increment and init next turn
+        } else {
             turn++;
             getActivePlayer().startTurn();
         }
